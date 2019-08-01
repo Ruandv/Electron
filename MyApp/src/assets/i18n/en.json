@@ -1,7 +1,8 @@
 {
   "PAGES": {
-      "HOME": {
-          "TITLE": "Tag Serial"
-      }
+    "HOME": {
+      "TITLE": "Serial Number",
+      "SCANNED": "Submitted"
+    }
   }
 }

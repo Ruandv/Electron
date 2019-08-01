@@ -1,11 +1,33 @@
-#myForm{
+#myForm {
   height: 100vh;
   display: flex;
-  flex-direction:column;
-  justify-content:center;
+  flex-direction: column;
+  justify-content: center;
 }
 
-label{
-    color: white;
-    text-align: end
+label {
+  color: white;
+  text-align: end;
+}
+.menu {
+  padding: 10px;
+}
+
+.scroll-table tbody {
+  height: 350px;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.scroll-table > thead,
+tbody,
+tr,
+td,
+th {
+  display: block;
+}
+
+.scroll-table thead tr,
+.scroll-table tbody tr {
+  margin: 0;
 }

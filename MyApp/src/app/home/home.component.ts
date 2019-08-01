@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FormGroup, FormControl,  FormBuilder }  from '@angular/forms';
-import * as fs from 'fs'
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+import * as fs from 'fs';
 
 @Component({
   selector: 'app-home',
@@ -10,33 +10,41 @@ import * as fs from 'fs'
 })
 export class HomeComponent implements OnInit {
   heroForm: FormGroup;
-  private tagserialnumber ="123";
-  get diagnostic() { return JSON.stringify(this.heroForm, this.getCircularReplacer());}
-  constructor(private translate: TranslateService) { }
-  links = ["https://www.maximintegrated.com/en/products/ibutton/software/tmex/download_drivers.cfm","http://www.maxim-ic.com/1-wiredrivers"]
+  private tagserialnumber = '';
+  language = 'en';
+  links = ['https://www.maximintegrated.com/en/products/ibutton/software/tmex/download_drivers.cfm', 'http://www.maxim-ic.com/1-wiredrivers'];
+  get diagnostic() {
+    return JSON.stringify(this.heroForm, this.getCircularReplacer());
+  }
+  constructor(private translate: TranslateService) {
+    this.readData();
+  }
+
   ngOnInit() {
-    this.heroForm = new FormGroup({ 'tagserialnumber': new FormControl(this.tagserialnumber, [])});
+    this.heroForm = new FormGroup({ tagserialnumber: new FormControl(this.tagserialnumber, [Validators.required]) });
+    this.translate.setDefaultLang(this.language);
   }
-  changeLanguage(lang:string){
-    this.translate.setDefaultLang(lang);
+  changeLanguage(lang: string) {
+    this.language = lang;
+    this.translate.setDefaultLang(this.language);
   }
 
-  saveData(){ 
+  saveData() {
     console.log(this.heroForm.value.tagserialnumber);
-    fs.appendFileSync("C:\\temp\\MySerials.log",this.heroForm.value.tagserialnumber+"\r\n", 'utf8')
+    fs.appendFileSync('C:\\temp\\MySerials.log', new Date().toDateString() + ',' + this.heroForm.value.tagserialnumber + '\r\n', 'utf8');
+    this.readData();
   }
 
-  readData(){
-    var data = fs.readFileSync("C:\\temp\\mySerials.log", 'utf8');
+  readData() {
+    const data = fs.readFileSync('C:\\temp\\mySerials.log', 'utf8');
     console.log(data);
-
+    this.links = data.split('\r\n');
   }
-
 
   getCircularReplacer = () => {
     const seen = new WeakSet();
     return (key, value) => {
-      if (typeof value === "object" && value !== null) {
+      if (typeof value === 'object' && value !== null) {
         if (seen.has(value)) {
           return;
         }
@@ -44,7 +52,5 @@ export class HomeComponent implements OnInit {
       }
       return value;
     };
-  };
-  
-  
+  }
 }

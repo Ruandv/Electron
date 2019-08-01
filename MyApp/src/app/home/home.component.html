@@ -1,21 +1,29 @@
 <div class="row menu">
-  <label class="col-md-1" (click)="changeLanguage('en')">English</label>
-  <label class="col-md-1" (click)="changeLanguage('af')">Afrikaans</label>
+  <label class="col-sm" [class.text-success]="language == 'en'" (click)="changeLanguage('en')">English</label>
+  <label class="col-sm" [class.text-success]="language == 'af'" (click)="changeLanguage('af')">Afrikaans</label>
 </div>
-<div>
-  <form  [formGroup]="heroForm" (ngSubmit)="saveData()">
-      {{diagnostic}}
+<div style="padding-top:200px">
+  <form [formGroup]="heroForm" (ngSubmit)="saveData()">
     <div class="form-group  row">
       <label class="col-md-3" for="tagserialnumber">
-        {{ "PAGES.HOME.TITLE" | translate }}
+        {{ 'PAGES.HOME.TITLE' | translate }}
       </label>
-      <input type="text" class="col-md-5 form-control"   name="tagserialnumber" formControlName ="tagserialnumber" />
-      <div class="btn btn-success" (click)="readData()">Read</div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <input type="text" focus class="col-md-5 form-control" name="tagserialnumber" formControlName="tagserialnumber" />
+      <button type="submit" class="btn btn-primary" [disabled]="heroForm.get('tagserialnumber').invalid">Submit</button>
     </div>
-    <div *ngFor="let i of links">
-       <a href='{{i}}' target="blank">{{i}}</a>
-      </div>
+    <table class="table scroll-table">
+      <thead>
+        <th>
+          <label>{{ 'PAGES.HOME.SCANNED' | translate }}</label>
+        </th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of links">
+          <td>
+            <label> {{ i }}</label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </form>
- 
 </div>

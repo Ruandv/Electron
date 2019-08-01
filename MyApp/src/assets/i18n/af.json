@@ -1,8 +1,8 @@
 {
-    "PAGES": {
-        "HOME": {
-            "TITLE": "Dallas Nommer"
-        }
+  "PAGES": {
+    "HOME": {
+      "TITLE": "Reeksnommer",
+      "SCANNED": "Ingedien"
     }
   }
-  
+}
