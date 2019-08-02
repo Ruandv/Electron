@@ -61,3 +61,5 @@ typings/
 .next
 /MyApp/dist
 /MyApp/package-lock.json
+build
+/MyApp/foreign_stuff/build
