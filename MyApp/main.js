@@ -15,6 +15,8 @@ function createWindow() {
 	win = new BrowserWindow({
 		width: 800,
 		height: 600,
+		//kiosk:true,
+		autoHideMenuBar:true,
 		title: app.getName() + ' (' + app.getVersion() + ')',
 		webPreferences: {
 			nodeIntegration: true

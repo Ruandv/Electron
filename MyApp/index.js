@@ -1,10 +1,30 @@
 const fs = require('fs');
-const myNative = require("./build/release/native")
+const testAddon = require('./build/Release/native.node');
+var status = 'OUT';
+
+module.exports = testAddon;
+
 function saveData() {
-    var data = document.getElementById("mySerialNumber");
-    console.log(data.value);
-    myNative.hello(function(arg) { "CallBack from Hello : " +  console.log(arg);});
-    console.log("Add Numbers 12+1 : " + myNative.addNumbers(12,1));
-    console.log("Multiply Numbers 4*2 : " + myNative.multiply(4,2));
-	fs.appendFileSync(`C:\\temp\\mySerials.log`, data.value + "\r\n");
+	var data = document.getElementById('mySerialNumber');
+	console.log(data.value);
+	console.log(testAddon.hello());
+	console.log(testAddon.addNumbers(1,data.value.length));
+	fs.appendFileSync(`C:\\temp\\mySerials.log`, data.value + ',' + status + '\r\n');
 }
+
+function toggleStatus(updatedStatus) {
+	console.log('Status Updated from ' + status + ' to ' + updatedStatus);
+	status = updatedStatus;
+	if (updatedStatus == 'IN') {
+		$('#clockIn').css('color', 'green');
+		$('#clockOut').css('color', 'White');
+	} else {
+		status = updatedStatus;
+		$('#clockIn').css('color', 'white');
+		$('#clockOut').css('color', 'Red');
+	}
+}
+
+$().ready(x => {
+	toggleStatus(status);
+});
