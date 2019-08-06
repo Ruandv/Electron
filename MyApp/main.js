@@ -9,8 +9,18 @@ require('electron-reload')(__dirname, {
 
 
 let win;
+//var usbDetect = require('usb-detection');
 
 function createWindow() {
+
+	
+//usbDetect.startMonitoring();
+
+// Detect add/insert
+// usbDetect.on('add', function(device) { console.log('add', device); });
+// usbDetect.on('add:vid', function(device) { console.log('add', device); });
+// usbDetect.on('add:vid:pid', function(device) { console.log('add', device); });
+
 	// Create the browser window.
 	win = new BrowserWindow({
 		width: 800,

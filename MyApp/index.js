@@ -1,14 +1,17 @@
 const fs = require('fs');
+
+
 const testAddon = require('./build/Release/native.node');
 var status = 'OUT';
 
-module.exports = testAddon;
+//module.exports = testAddon;
 
 function saveData() {
 	var data = document.getElementById('mySerialNumber');
 	console.log(data.value);
-	console.log(testAddon.hello());
-	console.log(testAddon.addNumbers(1,data.value.length));
+	// console.log(testAddon.hello());
+	// console.log(testAddon.addNumbers(1,data.value.length));
+	console.log(testAddon.aquire());
 	fs.appendFileSync(`C:\\temp\\mySerials.log`, data.value + ',' + status + '\r\n');
 }
 

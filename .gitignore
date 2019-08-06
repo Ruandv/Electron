@@ -63,3 +63,5 @@ typings/
 /MyApp/package-lock.json
 build
 /MyApp/foreign_stuff/build
+.vscode
+/MyApp/*.zip
