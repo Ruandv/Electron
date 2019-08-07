@@ -12,6 +12,7 @@ function saveData() {
 	// console.log(testAddon.hello());
 	// console.log(testAddon.addNumbers(1,data.value.length));
 	console.log(testAddon.aquire());
+	console.log(testAddon.getTag());
 	fs.appendFileSync(`C:\\temp\\mySerials.log`, data.value + ',' + status + '\r\n');
 }
 
