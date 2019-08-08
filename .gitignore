@@ -65,3 +65,4 @@ build
 /MyApp/foreign_stuff/build
 .vscode
 /MyApp/*.zip
+/MyApp/serialcomms-win32-ia32

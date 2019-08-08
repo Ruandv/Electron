@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-
 const testAddon = require('./build/Release/native.node');
 var status = 'OUT';
 
@@ -9,11 +8,11 @@ var status = 'OUT';
 function saveData() {
 	var data = document.getElementById('mySerialNumber');
 	console.log(data.value);
-	// console.log(testAddon.hello());
-	// console.log(testAddon.addNumbers(1,data.value.length));
 	console.log(testAddon.aquire());
+	console.log('Reading Tag...');
 	console.log(testAddon.getTag());
-	fs.appendFileSync(`C:\\temp\\mySerials.log`, data.value + ',' + status + '\r\n');
+	console.log('Tag Reading Done...');
+	//fs.appendFileSync(`C:\\temp\\mySerials.log`, data.value + ',' + status + '\r\n');
 }
 
 function toggleStatus(updatedStatus) {

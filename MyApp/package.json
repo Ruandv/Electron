@@ -6,14 +6,17 @@
   "private": true,
   "gypfile": true,
   "scripts": {
-    "start": "electron .",
-    "build32" : "npx electron-packager ./ --arch=ia32",
+    "start32": "electron .",
+    "publish32": "npx electron-packager ./ --arch=ia32",
+    "rebuildDll": "node-gyp rebuild --target=6.0.7 --arch=ia32 --dist-url=https://electronjs.org/headers",
+
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.3.1",
+    "electron": "^6.0.1",
     "electron-reload": "^1.4.1",
     "jquery": "^3.4.1",
     "node-addon-api": "^1.7.1",
@@ -21,7 +24,6 @@
     "popper.js": "^1.15.0"
   },
   "devDependencies": {
-    "electron": "^6.0.0",
     "electron-packager": "^14.0.4",
     "electron-rebuild": "^1.8.5"
   }

@@ -19,7 +19,13 @@
       ],
       "cflags!": ["-fno-exceptions"],
       "cflags_cc!": ["-fno-exceptions"],
-      "defines": ["NAPI_CPP_EXCEPTIONS"]
+      "defines": ["NAPI_CPP_EXCEPTIONS"],
+      'msvs_settings': {
+      'VCLinkerTool': {
+        'ImageHasSafeExceptionHandlers': 'false',
+      },
+    },
+ 
     }
   ]
 }
