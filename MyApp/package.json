@@ -7,9 +7,8 @@
   "gypfile": true,
   "scripts": {
     "start32": "electron .",
-    "publish32": "npx electron-packager ./ --arch=ia32",
-    "rebuildDll": "node-gyp rebuild --target=6.0.7 --arch=ia32 --dist-url=https://electronjs.org/headers",
-
+    "publish32": "npx electron-packager ./ --arch=ia32 --overwrite",
+    "rebuildDll": "node-gyp rebuild --target=6.0.1 --arch=ia32 --dist-url=https://electronjs.org/headers",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -18,7 +17,7 @@
     "bootstrap": "^4.3.1",
     "electron": "^6.0.1",
     "electron-reload": "^1.4.1",
-    "jquery": "^3.4.1",
+    "jquery": "^1.9.1",
     "node-addon-api": "^1.7.1",
     "node-expat": "^2.3.18",
     "popper.js": "^1.15.0"

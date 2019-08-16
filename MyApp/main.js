@@ -26,7 +26,7 @@ function createWindow() {
 		width: 800,
 		height: 600,
 		//kiosk:true,
-		autoHideMenuBar:true,
+		//autoHideMenuBar:true,
 		title: app.getName() + ' (' + app.getVersion() + ')',
 		webPreferences: {
 			nodeIntegration: true
