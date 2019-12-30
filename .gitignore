@@ -71,3 +71,5 @@ build
 /Electron_FrontEnd/Image_Duplication_Identifier-win32-x64
 /Electron_FrontEnd/Image_Duplication_Identifier-linux-x64
 /ImageDuplicateFinder/.vs
+/Electron_FrontEnd/Images/ImageArray.json
+/Electron_FrontEnd/Images/results.html

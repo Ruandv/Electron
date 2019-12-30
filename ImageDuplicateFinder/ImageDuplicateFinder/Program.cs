@@ -96,7 +96,11 @@ namespace ImageDuplicateFinder
                                         right: 0px;
                                         display:none;
                                     }
-
+                                    .card-img-top {
+                                        width: 100%;
+                                        height: 15vw;
+                                        object-fit: cover;
+                                    }
 									.top-row{
 										 margin-bottom:20px; 
                                          padding-left:30%;
@@ -125,30 +129,45 @@ namespace ImageDuplicateFinder
                                         document.getElementById('myData').innerHTML += item+'<br>';
                                     }
 
-	                                function isDuplicate(path){
-                                        var img = document.getElementById(path);
-                                        if(img.className.indexOf('grayScale')>-1)
+	                                function isDuplicate(path,val){
+                                    document.querySelectorAll('#img_' + val).forEach( img =>
                                         {
-                                            array.splice( array.indexOf('del /f ' + path.split('/').join('\\')), 1);
-                                            img.className = img.className.replace('grayScale','');
-                                        }
-                                        else
-		                                {
-                                            array.push('del /f ' + path.split('/').join('\\'));
-                                            img.className += ' grayScale';
-                                        }
-                                        document.getElementById('myData').innerHTML ='';
+                                            /* var img = document.getElementById(val);*/
+
+                                            if(img.className.indexOf('grayScale')>-1)
+                                            {
+                                                array.splice( array.indexOf({id:val,cmd:'del /f ' + path.split('/').join('\\')}), 1);
+                                                img.className = img.className.replace('grayScale','');
+                                            }
+                                            else
+		                                    {
+                                                array.push({id:val,cmd:'del /f ' + path.split('/').join('\\')});
+                                                img.className += ' grayScale';
+                                            }
+                                            document.getElementById('myData').innerHTML ='';
+                                        });
                                         array.forEach(updateHTML);                                        
                                     }
 
                                     function resetArray(){
-                                         var removeArray = array.slice();
+                                         var removeArray = [];//array.slice();
 
+const map = new Map();
+for (const item of array) {
+    if(!map.has(item.id)){
+        map.set(item.id, true);    // set any value to Map
+        removeArray.push({
+            id: item.id,
+            cmd: item.cmd
+        });
+    }
+}
                                          removeArray.forEach(
                                          x=>{
-                                            var fn = x.replace('del /f ','').split('\\').join('/');
+                                            var fn = x.cmd.replace('del /f ','').split('\\').join('/');
+                                            var id = x.id;
                                             console.log(fn); 
-                                            isDuplicate(fn);
+                                            isDuplicate(fn,id);
                                          });
                                     }
                                 </script>
@@ -180,28 +199,30 @@ namespace ImageDuplicateFinder
                         sb.Append(@$"
                                     <div class='row text-center'>
                                         <div class='col-lg-6 col-md-6 mb-4'>
-                                            <div class='card h-100'>
-                                                <img id ='{img.Key.Replace("\\", "/")}' class='card-img-top' src='{img.Key}' alt=''>
+                                            <div class='card'>
+                                                <!-- <img id ='{img.Key.Replace("\\", "/")}' class='card-img-top' src='{img.Key}' alt=''> -->
+<img id ='img_{img.Value}' class='card-img-top' src='{img.Key}' alt=''>
                                                 <div class='card-body'>
                                                     <h4 class='card-title'>Original</h4>
                                                     <p class='card-text'>
-                                                        <div class='{(img.Key == comp.Key ? "":"hilight")}'>FileName : {img.Key.Substring(img.Key.LastIndexOf("\\") + 1)}</div>
-                                                        <div class='{(fimg.Length == fcomp.Length? "" : "hilight")}'>FileSize : {fimg.Length}</div>
+                                                        <div class='{(img.Key == comp.Key ? "" : "hilight")}'>FileName : {img.Key.Substring(img.Key.LastIndexOf("\\") + 1)}</div>
+                                                        <div class='{(fimg.Length == fcomp.Length ? "" : "hilight")}'>FileSize : {fimg.Length}</div>
                                                         <div class='{(fimg.CreationTime == fcomp.CreationTime ? "" : "hilight")}'>Created Date : {fimg.CreationTime}</div>
                                                         <div class='{(pimg.PhysicalDimension == pcomp.PhysicalDimension ? "" : "hilight")}'>Dimensions : {pimg.PhysicalDimension.Width}</div>
                                                         <div class='{(pimg.HorizontalResolution == pcomp.HorizontalResolution ? "" : "hilight")}'>Resolution : {(pimg.HorizontalResolution == pimg.VerticalResolution ? pimg.HorizontalResolution.ToString() : (pimg.HorizontalResolution).ToString() + "x" + pimg.VerticalResolution)}</div>
                                                     </p>
                                                 </div>
                                                 <div class='card-footer'>
-                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{img.Key.Replace("\\", "/")}') class='btn btn-danger'>Is Duplicate</div>
+                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{img.Key.Replace("\\", "/")}','{img.Value}') class='btn btn-danger'>Is Duplicate</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class='col-lg-6 col-md-6 mb-4'>
-                                            <div class='card h-100'>
-                                                <img id ='{comp.Key.Replace("\\", "/")}' class='card-img-top' src='{comp.Key}' alt=''>
+                                            <div class='card'>
+                                                <!-- <img id ='{comp.Key.Replace("\\", "/")}' class='card-img-top' src='{comp.Key}' alt=''> -->
+                                                <img id ='img_{comp.Value}' class='card-img-top' src='{comp.Key}' alt=''>
                                                 <div class='card-body'>
-                                                    <h4 class='card-title'>Duplicate : {similarity}</h4>
+                                                    <h4 class='card-title'>Duplicate : {similarity * 100}</h4>
                                                     <p class='card-text'>
                                                         <div>FileName : {comp.Key.Substring(comp.Key.LastIndexOf("\\") + 1)}</div>
                                                         <div>FileSize : {fcomp.Length}</div>
@@ -211,7 +232,7 @@ namespace ImageDuplicateFinder
                                                         </p>
                                                 </div>
                                                 <div class='card-footer'>
-                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{comp.Key.Replace("\\", "/")}') class='btn btn-danger'>Is Duplicate</div>
+                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{comp.Key.Replace("\\", "/")}','{comp.Value}') class='btn btn-danger'>Is Duplicate</div>
                                                 </div>
                                             </div>
                                         </div>
