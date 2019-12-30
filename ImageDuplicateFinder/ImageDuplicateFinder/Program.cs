@@ -21,7 +21,6 @@ namespace ImageDuplicateFinder
             if (args.Count() > 0)
             {
                 images = Directory.GetFiles(args[0], "*.jpg");
-                Console.WriteLine(args[1]);
                 threshold = float.Parse(args[1]);
             }
             else
@@ -59,15 +58,20 @@ namespace ImageDuplicateFinder
                     tasks.Add(tsk);
                     i++;
                 }
+
+                // Start the Threads
                 foreach (var t in tasks)
                 {
                     Console.WriteLine($"Starting Thread {t.Name}");
                     t.Start();
                 }
+
+                // Wait for all the threads to finish
                 while (tasks.Any(x => x.IsAlive))
                 {
 
                 }
+
                 File.WriteAllText(Path.Combine(args[0], "ImageArray.json"), System.Text.Json.JsonSerializer.Serialize(imageArray));
             }
             else
@@ -101,6 +105,11 @@ namespace ImageDuplicateFinder
 									.actionButton{
                                         margin: 2px;
                                     }
+                                    
+                                    .hilight{
+                                        color:red
+                                    }
+
                                     .grayScale{
                                         filter: gray; /* IE6-9 */
                                         -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
@@ -153,9 +162,7 @@ namespace ImageDuplicateFinder
                             </div>
                            <div id ='myData'>No Items Selected</div>
                             <div id='parent-list'>
-                            "
-
-                        );
+                            ");
 
             processed = new Dictionary<string, ulong>();
             foreach (var img in imageArray)
@@ -178,11 +185,11 @@ namespace ImageDuplicateFinder
                                                 <div class='card-body'>
                                                     <h4 class='card-title'>Original</h4>
                                                     <p class='card-text'>
-                                                        <div>FileName : {img.Key.Substring(img.Key.LastIndexOf("\\") + 1)}</div>
-                                                        <div>FileSize : {fimg.Length}</div>
-                                                        <div>Created Date : {fimg.CreationTime}</div>
-                                                        <div>Dimensions : {pimg.PhysicalDimension.Width}</div>
-                                                        <div>Resolution : {(pimg.HorizontalResolution == pimg.VerticalResolution ? pimg.HorizontalResolution.ToString() : (pimg.HorizontalResolution).ToString() + "x" + pimg.VerticalResolution)}</div>
+                                                        <div class='{(img.Key == comp.Key ? "":"hilight")}'>FileName : {img.Key.Substring(img.Key.LastIndexOf("\\") + 1)}</div>
+                                                        <div class='{(fimg.Length == fcomp.Length? "" : "hilight")}'>FileSize : {fimg.Length}</div>
+                                                        <div class='{(fimg.CreationTime == fcomp.CreationTime ? "" : "hilight")}'>Created Date : {fimg.CreationTime}</div>
+                                                        <div class='{(pimg.PhysicalDimension == pcomp.PhysicalDimension ? "" : "hilight")}'>Dimensions : {pimg.PhysicalDimension.Width}</div>
+                                                        <div class='{(pimg.HorizontalResolution == pcomp.HorizontalResolution ? "" : "hilight")}'>Resolution : {(pimg.HorizontalResolution == pimg.VerticalResolution ? pimg.HorizontalResolution.ToString() : (pimg.HorizontalResolution).ToString() + "x" + pimg.VerticalResolution)}</div>
                                                     </p>
                                                 </div>
                                                 <div class='card-footer'>
@@ -212,10 +219,8 @@ namespace ImageDuplicateFinder
                                     ");
                         Console.WriteLine($"{i} Comparing {img.Key}");
                         Console.WriteLine($"{Math.Round(similarity, 6, MidpointRounding.ToPositiveInfinity)}\t\t{comp.Key}");
-
                     }
                 }
-
                 processed.Add(img.Key, img.Value);
                 i++;
             }
@@ -227,8 +232,6 @@ namespace ImageDuplicateFinder
 
             sw.Write(sb);
             sw.Close();
-            //copy the results.js to the same folder;
-            Console.WriteLine(Environment.CurrentDirectory);
             File.Copy(".\\results.js", Path.Combine(args[0], "results.js"), true);
         }
 
