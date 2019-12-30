@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImageDuplicateFinder": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\\\Users\\\\Ruan.dv\\\\Desktop\\\\electron\\\\Images\\\\ 0,91"
+    }
+  }
+}

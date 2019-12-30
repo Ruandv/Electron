@@ -1,4 +1,0 @@
-lib /def:x86/IBFS32.def /out:x86/IBFS32.lib /machine:x86
-
-node-gyp rebuild --arch=ia32
-
