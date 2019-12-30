@@ -1,21 +1,26 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, Tray } = require('electron')
 const path = require('path')
 const electron = require('electron')
 const ipc = electron.ipcMain;
 const { execFile } = require('child_process');
-var fs = require('fs');
+const fs = require('fs');
+
+var imageLocation = __dirname + "\\Images\\";
+let threshold = 0.9;
+var executablePath = "\\ImageDuplicateFinder\\bin\\Debug\\netcoreapp3.1\\ImageDuplicateFinder.exe";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-var imageLocation = __dirname + "\\Images\\";
-let threshold = 0.9;
+
 function createWindow() {
+
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1024,
-        height: 768
+        height: 768,
+        icon: path.join(__dirname, "fav.jpg")
     })
 
     mainWindow.webContents.once('dom-ready', () => {
@@ -27,6 +32,10 @@ function createWindow() {
     // Open the DevTools.
     //mainWindow.webContents.openDevTools()
 
+    executablePath = path.join(__dirname, "../ImageDuplicateFinder/ImageDuplicateFinder/bin/debug/netcoreapp3.1/ImageDuplicateFinder.exe");
+    if (!fs.existsSync(executablePath)) {
+        console.error("Please complie or set the ImageDuplicateFinder path.");
+    }
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
         deleteFile("results.html");
@@ -101,8 +110,6 @@ menu = Menu.buildFromTemplate(application_menu);
 Menu.setApplicationMenu(menu);
 
 function processImages() {
-
-    var executablePath = "C:\\Temp\\ImageDuplicationProject\\ImageDuplicateFinder\\ImageDuplicateFinder\\bin\\Debug\\netcoreapp3.1\\ImageDuplicateFinder.exe";
     var params = [imageLocation, threshold.toString().replace(".", ",")];
     execFile(executablePath, params, (error, stdout, stderr) => {
         if (error) {
