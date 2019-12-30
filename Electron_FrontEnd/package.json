@@ -1,10 +1,11 @@
 {
-  "name": "electron-quick-start",
+  "name": "Image_Duplication_Identifier",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "rimraf Electron-* && electron-packager . --platform=darwin,win32,linux --arch=x64 --icon=fav --overwrite "
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -18,7 +19,9 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^7.1.7",
-    "electron-prebuilt": "^1.4.13"
+    "electron-packager": "^14.1.1",
+    "electron-prebuilt": "^1.4.13",
+    "rimraf": "^3.0.0"
   },
   "dependencies": {
     "bootstrap": "^4.4.1",
