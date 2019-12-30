@@ -173,3 +173,13 @@ ipc.on("removeMarkedItems", (event, obj) => {
         console.log(x);
     })
 })
+
+ipc.on("resetItems", _ => {
+    console.log('Clear dups');
+    dups = [];
+})
+
+
+ipc.on("goHome", _ => {
+    mainWindow.loadURL(`file:${__dirname}/src/index.html`)
+})

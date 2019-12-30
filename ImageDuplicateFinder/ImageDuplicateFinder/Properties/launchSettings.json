@@ -2,7 +2,7 @@
   "profiles": {
     "ImageDuplicateFinder": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\\\Users\\\\Ruan.dv\\\\Desktop\\\\electron\\\\Images\\\\ 0,91"
+      "commandLineArgs": "C:\\SourceCode\\Git\\Personal\\Electron\\Electron_FrontEnd\\Images\\ 0,91"
     }
   }
 }

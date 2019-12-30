@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,7 +42,7 @@ namespace ImageDuplicateFinder
 
             var i = 0;
 
-            if (!File.Exists($"{args[0]}ImageArray.json"))
+            if (!File.Exists(Path.Combine(args[0], "ImageArray.json")))
             {
                 List<Thread> tasks = new List<Thread>();
 
@@ -67,11 +68,11 @@ namespace ImageDuplicateFinder
                 {
 
                 }
-                File.WriteAllText($"{args[0]}ImageArray.json", System.Text.Json.JsonSerializer.Serialize(imageArray));
+                File.WriteAllText(Path.Combine(args[0], "ImageArray.json"), System.Text.Json.JsonSerializer.Serialize(imageArray));
             }
             else
             {
-                imageArray = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, ulong>>(File.ReadAllText($"{args[0]}ImageArray.json"));
+                imageArray = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, ulong>>(File.ReadAllText(Path.Combine(args[0], "ImageArray.json")));
             }
 
             i = 0;
@@ -89,29 +90,33 @@ namespace ImageDuplicateFinder
                                         position:fixed; 
                                         top: 0px; 
                                         right: 0px;
+                                        display:none;
                                     }
 
 									.top-row{
-										 /* margin-top:200px; 
-                                         position:fixed; */
+										 margin-bottom:20px; 
+                                         padding-left:30%;
 									}
-									
+
+									.actionButton{
+                                        margin: 2px;
+                                    }
                                     .grayScale{
                                         filter: gray; /* IE6-9 */
                                         -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
                                         filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
                                     }
                                 </style>
-                                <script src = 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js' ></script>
-                                <link href = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css' rel = 'stylesheet'>
-                                <script src = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.js' ></script >
+                                <script src = 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+                                <script src = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.js'></script >
+                                <link href = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css' rel = 'stylesheet'>                                
                                 <script>
 	                                var array = [];
                                     function updateHTML(item,index){
                                         document.getElementById('myData').innerHTML += item+'<br>';
                                     }
 
-	                                function isDuplicate(path,salue){
+	                                function isDuplicate(path){
                                         var img = document.getElementById(path);
                                         if(img.className.indexOf('grayScale')>-1)
                                         {
@@ -126,12 +131,25 @@ namespace ImageDuplicateFinder
                                         document.getElementById('myData').innerHTML ='';
                                         array.forEach(updateHTML);                                        
                                     }
+
+                                    function resetArray(){
+                                         var removeArray = array.slice();
+
+                                         removeArray.forEach(
+                                         x=>{
+                                            var fn = x.replace('del /f ','').split('\\').join('/');
+                                            console.log(fn); 
+                                            isDuplicate(fn);
+                                         });
+                                    }
                                 </script>
                             </head>
                         <body class='myBody'>
                             <div class='container'>
-							<div class = 'row top-row'>
-                                <div class='btn btn-primary' id ='removeItems'>DELETE</div>
+							<div id='actionButtons' class = 'row top-row'>
+                                <div class='btn btn-primary actionButton' id ='actionButton'>BACK</div>
+                                <div class='btn btn-primary actionButton' id ='actionButton'>DELETE</div>
+                                <div class='btn btn-primary actionButton' id ='actionButton' onclick = 'resetArray()'>RESET</div>
                             </div>
                            <div id ='myData'>No Items Selected</div>
                             <div id='parent-list'>
@@ -147,6 +165,11 @@ namespace ImageDuplicateFinder
                     var similarity = ImageHashes.CompareHashes(img.Value, comp.Value);
                     if (similarity > threshold && !comp.Key.Equals(img.Key))
                     {
+                        var fimg = new FileInfo(img.Key);
+                        var fcomp = new FileInfo(comp.Key);
+                        var pimg = Image.FromFile(img.Key);
+                        var pcomp = Image.FromFile(comp.Key);
+
                         sb.Append(@$"
                                     <div class='row text-center'>
                                         <div class='col-lg-6 col-md-6 mb-4'>
@@ -155,11 +178,15 @@ namespace ImageDuplicateFinder
                                                 <div class='card-body'>
                                                     <h4 class='card-title'>Original</h4>
                                                     <p class='card-text'>
-                                                        FileName : {img.Key.Substring(img.Key.LastIndexOf("\\") + 1)}
+                                                        <div>FileName : {img.Key.Substring(img.Key.LastIndexOf("\\") + 1)}</div>
+                                                        <div>FileSize : {fimg.Length}</div>
+                                                        <div>Created Date : {fimg.CreationTime}</div>
+                                                        <div>Dimensions : {pimg.PhysicalDimension.Width}</div>
+                                                        <div>Resolution : {(pimg.HorizontalResolution == pimg.VerticalResolution ? pimg.HorizontalResolution.ToString() : (pimg.HorizontalResolution).ToString() + "x" + pimg.VerticalResolution)}</div>
                                                     </p>
                                                 </div>
                                                 <div class='card-footer'>
-                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{img.Key.Replace("\\", "/")}','{img.Value}') class='btn btn-danger'>Is Duplicate</div>
+                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{img.Key.Replace("\\", "/")}') class='btn btn-danger'>Is Duplicate</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -169,11 +196,15 @@ namespace ImageDuplicateFinder
                                                 <div class='card-body'>
                                                     <h4 class='card-title'>Duplicate : {similarity}</h4>
                                                     <p class='card-text'>
-                                                        FileName : {comp.Key.Substring(comp.Key.LastIndexOf("\\") + 1)}
+                                                        <div>FileName : {comp.Key.Substring(comp.Key.LastIndexOf("\\") + 1)}</div>
+                                                        <div>FileSize : {fcomp.Length}</div>
+                                                        <div>Created Date : {fcomp.CreationTime}</div>
+                                                        <div>Dimensions : {pcomp.PhysicalDimension.Width}</div>
+                                                        <div>Resolution : {(pcomp.HorizontalResolution == pcomp.VerticalResolution ? pcomp.HorizontalResolution.ToString() : (pcomp.HorizontalResolution).ToString() + "x" + pcomp.VerticalResolution)}</div>
                                                         </p>
                                                 </div>
                                                 <div class='card-footer'>
-                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{comp.Key.Replace("\\", "/")}','{comp.Value}') class='btn btn-danger'>Is Duplicate</div>
+                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{comp.Key.Replace("\\", "/")}') class='btn btn-danger'>Is Duplicate</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -192,12 +223,13 @@ namespace ImageDuplicateFinder
             sb.Append(@"</div>");//parent-list
             sb.Append(@"<script>require('./results')</script>");
             sb.Append(@"</body></html>");
-            var sw = new StreamWriter($"{args[0]}results.html");
+            var sw = new StreamWriter(Path.Combine(args[0], "results.html"));
+
             sw.Write(sb);
             sw.Close();
             //copy the results.js to the same folder;
             Console.WriteLine(Environment.CurrentDirectory);
-            File.Copy(".\\results.js", $"{args[0]}results.js",true);
+            File.Copy(".\\results.js", Path.Combine(args[0], "results.js"), true);
         }
 
         private static void ProcessImage(Dictionary<string, ulong> imageArray, ImageHashes imageHasher1, string img)
