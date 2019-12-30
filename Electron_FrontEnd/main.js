@@ -38,7 +38,8 @@ function createWindow() {
     }
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
-        deleteFile("results.html");
+        deleteFile(imageLocation, "results.html");
+        deleteFile(imageLocation, "results.js");
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
@@ -117,21 +118,21 @@ function processImages() {
         }
         else {
             mainWindow.loadURL('file://' + imageLocation.split("\\").join('/') + 'results.html');
-            deleteFile("ImageArray.json");
+            deleteFile(imageLocation, "ImageArray.json");
 
             console.log("DONE " + imageLocation.split("\\").join('/') + 'results.html');
         }
     });
 }
 
-function deleteFile(fileName) {
-    if (fs.existsSync(imageLocation + fileName)) {
-        fs.unlink(imageLocation + fileName, (err) => {
+function deleteFile(fileLocation, fileName) {
+    if (fs.existsSync(fileLocation + fileName)) {
+        fs.unlink(fileLocation + fileName, (err) => {
             if (err) {
                 console.log(err);
                 return;
             }
-            console.log("File succesfully deleted : " + fileName);
+            console.log("File succesfully deleted : " + fileLocation + fileName);
         });
     }
 }
@@ -157,4 +158,18 @@ ipc.on("updateThreshold", (event, obj) => {
 
 ipc.on("processImagesClick", () => {
     processImages();
+})
+
+var dups = [];
+ipc.on("removeItem", (event, obj) => {
+    console.log("Remove this item " + obj.val)
+    dups.push(obj.val);
+})
+
+ipc.on("removeMarkedItems", (event, obj) => {
+    console.log("We will now delete all the itmes you marked");
+    dups.forEach(x => {
+         deleteFile("",x);
+        console.log(x);
+    })
 })

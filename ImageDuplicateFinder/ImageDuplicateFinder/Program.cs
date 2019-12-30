@@ -40,7 +40,7 @@ namespace ImageDuplicateFinder
             }
 
             var i = 0;
-            
+
             if (!File.Exists($"{args[0]}ImageArray.json"))
             {
                 List<Thread> tasks = new List<Thread>();
@@ -92,8 +92,8 @@ namespace ImageDuplicateFinder
                                     }
 
 									.top-row{
-										 margin-top:200px; 
-                                         position:fixed;
+										 /* margin-top:200px; 
+                                         position:fixed; */
 									}
 									
                                     .grayScale{
@@ -131,9 +131,12 @@ namespace ImageDuplicateFinder
                         <body class='myBody'>
                             <div class='container'>
 							<div class = 'row top-row'>
+                                <div class='btn btn-primary' id ='removeItems'>DELETE</div>
+                            </div>
+                           <div id ='myData'>No Items Selected</div>
+                            <div id='parent-list'>
+                            "
 
-                            </div >
-                           <div id ='myData'>No Items Selected</div>"
                         );
 
             processed = new Dictionary<string, ulong>();
@@ -156,7 +159,7 @@ namespace ImageDuplicateFinder
                                                     </p>
                                                 </div>
                                                 <div class='card-footer'>
-                                                    <div id ='{img.Value + comp.Value}' onclick = isDuplicate('{img.Key.Replace("\\", "/")}','{img.Value}') class='btn btn-danger'>Is Duplicate</div>
+                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{img.Key.Replace("\\", "/")}','{img.Value}') class='btn btn-danger'>Is Duplicate</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -170,7 +173,7 @@ namespace ImageDuplicateFinder
                                                         </p>
                                                 </div>
                                                 <div class='card-footer'>
-                                                    <div id ='{img.Value + comp.Value}' onclick = isDuplicate('{comp.Key.Replace("\\", "/")}','{comp.Value}') class='btn btn-danger'>Is Duplicate</div>
+                                                    <div id ='{img.Key.Replace("\\", "/")}' onclick = isDuplicate('{comp.Key.Replace("\\", "/")}','{comp.Value}') class='btn btn-danger'>Is Duplicate</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -185,10 +188,16 @@ namespace ImageDuplicateFinder
                 processed.Add(img.Key, img.Value);
                 i++;
             }
-            sb.Append(@" </div></body></html>");
+            sb.Append(@" </div>");
+            sb.Append(@"</div>");//parent-list
+            sb.Append(@"<script>require('./results')</script>");
+            sb.Append(@"</body></html>");
             var sw = new StreamWriter($"{args[0]}results.html");
             sw.Write(sb);
             sw.Close();
+            //copy the results.js to the same folder;
+            Console.WriteLine(Environment.CurrentDirectory);
+            File.Copy(".\\results.js", $"{args[0]}results.js",true);
         }
 
         private static void ProcessImage(Dictionary<string, ulong> imageArray, ImageHashes imageHasher1, string img)

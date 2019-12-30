@@ -68,3 +68,5 @@ build
 /MyApp/serialcomms-win32-ia32
 /ImageDuplicateFinder/ImageDuplicateFinder/bin
 /ImageDuplicateFinder/ImageDuplicateFinder/obj
+/Electron_FrontEnd/Image_Duplication_Identifier-win32-x64
+/Electron_FrontEnd/Image_Duplication_Identifier-linux-x64
