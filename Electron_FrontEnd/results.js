@@ -19,7 +19,6 @@ document.getElementById("actionButtons").querySelectorAll(".actionButton").forEa
     });
 });
 
-
 document.getElementById("parent-list").addEventListener("click", function (e) {
 	if (e.target && e.target.nodeName == "DIV" && e.target.innerHTML == 'Is Duplicate') {
 		ipc.send("removeItem", { val: e.target.id });
