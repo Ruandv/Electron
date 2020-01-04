@@ -12,15 +12,19 @@ namespace ImageDuplicateFinder
     class Program
     {
         private static float threshold = 0.96f;
-        static string[] images;
+        static List<string> images = new List<string>();
         static Dictionary<string, ulong> imageArray = new Dictionary<string, ulong>();
         static Dictionary<string, ulong> processed = new Dictionary<string, ulong>();
         static ImageHashes imageHasher1 = new ImageHashes(new ImageMagickTransformer());
         static void Main(string[] args)
         {
+            var filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "svg" };
             if (args.Count() > 0)
             {
-                images = Directory.GetFiles(args[0], "*.jpg");
+                foreach (var filter in filters)
+                {
+                    images.AddRange(Directory.GetFiles(args[0], $"*.{filter}"));
+                }
                 threshold = float.Parse(args[1]);
             }
             else
@@ -97,8 +101,7 @@ namespace ImageDuplicateFinder
                                         display:none;
                                     }
                                     .card-img-top {
-                                        width: 100%;
-                                        height: 15vw;
+                                        height: 300px;
                                         object-fit: cover;
                                     }
 									.top-row{
@@ -119,6 +122,37 @@ namespace ImageDuplicateFinder
                                         -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
                                         filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
                                     }
+
+									.grayScale .msg::after{
+										  content:'';
+										  position: absolute;    
+										  top: 102px;     
+										  width: 80%;
+										  height: 40px;
+										  left: 10%;  
+										  background: RED; 
+										  color: white;
+										  font-size: 20px;
+										  margin :20px;
+										  text-align: center;
+										  transform: rotate(20deg);
+                                    }
+									
+									.grayScale .msg::before{
+										  content:'DELETE';
+										  position: absolute;    
+										  top: 102px;     
+										  width: 80%;
+										  height: 40px;
+										  left: 10%;  
+										  background: RED; 
+										  color: white;
+										  z-index:200;
+										  font-size: 20px;
+										  margin :20px;
+										  text-align: center;
+										  transform: rotate(-20deg);
+                                    }
                                 </style>
                                 <script src = 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
                                 <script src = 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.js'></script >
@@ -130,10 +164,8 @@ namespace ImageDuplicateFinder
                                     }
 
 	                                function isDuplicate(path,val){
-                                    document.querySelectorAll('#img_' + val).forEach( img =>
+                                        document.querySelectorAll('#img_' + val).forEach( img =>
                                         {
-                                            /* var img = document.getElementById(val);*/
-
                                             if(img.className.indexOf('grayScale')>-1)
                                             {
                                                 array.splice( array.indexOf({id:val,cmd:'del /f ' + path.split('/').join('\\')}), 1);
@@ -150,18 +182,20 @@ namespace ImageDuplicateFinder
                                     }
 
                                     function resetArray(){
-                                         var removeArray = [];//array.slice();
+                                        var removeArray = [];
 
-const map = new Map();
-for (const item of array) {
-    if(!map.has(item.id)){
-        map.set(item.id, true);    // set any value to Map
-        removeArray.push({
-            id: item.id,
-            cmd: item.cmd
-        });
-    }
-}
+                                        /* Make sure we only get a distinct List*/
+                                        const map = new Map();
+                                        for (const item of array) {
+                                            if(!map.has(item.id)){
+                                                map.set(item.id, true);    // set any value to Map
+                                                removeArray.push({
+                                                    id: item.id,
+                                                    cmd: item.cmd
+                                                });
+                                            }
+                                        }
+                                        /* now go and remove the grayscale class*/
                                          removeArray.forEach(
                                          x=>{
                                             var fn = x.cmd.replace('del /f ','').split('\\').join('/');
@@ -200,8 +234,9 @@ for (const item of array) {
                                     <div class='row text-center'>
                                         <div class='col-lg-6 col-md-6 mb-4'>
                                             <div class='card'>
-                                                <!-- <img id ='{img.Key.Replace("\\", "/")}' class='card-img-top' src='{img.Key}' alt=''> -->
-<img id ='img_{img.Value}' class='card-img-top' src='{img.Key}' alt=''>
+                                                <div id ='img_{img.Value}' class='imgWrapper'><div class='msg'></div>
+                                                    <img class='card-img-top' src='{img.Key}' alt=''>
+                                                </div>
                                                 <div class='card-body'>
                                                     <h4 class='card-title'>Original</h4>
                                                     <p class='card-text'>
@@ -219,8 +254,9 @@ for (const item of array) {
                                         </div>
                                         <div class='col-lg-6 col-md-6 mb-4'>
                                             <div class='card'>
-                                                <!-- <img id ='{comp.Key.Replace("\\", "/")}' class='card-img-top' src='{comp.Key}' alt=''> -->
-                                                <img id ='img_{comp.Value}' class='card-img-top' src='{comp.Key}' alt=''>
+                                                <div id ='img_{comp.Value}' class='imgWrapper'><div class='msg'></div>
+                                                    <img class='card-img-top' src='{comp.Key}' alt=''>
+                                                </div>
                                                 <div class='card-body'>
                                                     <h4 class='card-title'>Duplicate : {similarity * 100}</h4>
                                                     <p class='card-text'>
