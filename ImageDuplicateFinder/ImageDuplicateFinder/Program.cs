@@ -211,6 +211,7 @@ namespace ImageDuplicateFinder
 							<div id='actionButtons' class = 'row top-row'>
                                 <div class='btn btn-primary actionButton' id ='actionButton'>BACK</div>
                                 <div class='btn btn-primary actionButton' id ='actionButton'>DELETE</div>
+                                <div class='btn btn-primary actionButton' id ='actionButton'>IDENTIFY</div>
                                 <div class='btn btn-primary actionButton' id ='actionButton' onclick = 'resetArray()'>RESET</div>
                             </div>
                            <div id ='myData'>No Items Selected</div>

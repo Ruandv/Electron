@@ -16,6 +16,11 @@ document.getElementById("actionButtons").querySelectorAll(".actionButton").forEa
             ipc.send("goHome");
         }
 
+        if (e.target && e.target.nodeName == "DIV" && e.target.innerHTML == 'Identify') {
+            console.log("TODO");
+            // ipc.send("goHome");
+        }
+
     });
 });
 

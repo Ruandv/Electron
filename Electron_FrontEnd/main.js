@@ -1,18 +1,92 @@
-// Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, Tray } = require('electron')
-const path = require('path')
+'use strict';
+const {app, BrowserWindow, Menu, dialog} = require('electron');
+const path = require('path');
+const assert = require('assert');
 const electron = require('electron')
 const ipc = electron.ipcMain;
 const { execFile } = require('child_process');
 const fs = require('fs');
 
-var imageLocation = __dirname + "\\Images\\";
-let threshold = 0.9;
-var executablePath = "\\ImageDuplicateFinder\\bin\\Debug\\netcoreapp3.1\\ImageDuplicateFinder.exe";
+const face = require("./face");
+const {
+	openNewGitHubIssue,
+	openUrlMenuItem,
+	showAboutWindow,
+	aboutMenuItem,
+	debugInfo,
+	appMenu,
+	openSystemPreferences,
+	runJS
+    } = require('electron-util');
+/// const enforceMacosAppLocation = require('./source/enforce-macos-app-location');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+
+var imageLocation = __dirname + "\\Images\\";
+var dups = [];
+let threshold = 0.9;
+let executablePath = "";
+var executablePaths = [path.join(__dirname, "../ImageDuplicateFinder/ImageDuplicateFinder/bin/debug/netcoreapp3.1/ImageDuplicateFinder.exe"),
+                        path.join(__dirname, "../ImageDuplicateFinder/ImageDuplicateFinder/bin/debug/netcoreapp3.0/ImageDuplicateFinder.exe"),];
+
+const createMenu = () => {
+	var application_menu = [
+        {
+            label: 'File',
+            submenu: [
+                {
+                    label: 'Set Image Folder',
+                    accelerator: 'F2',
+                    click: () => {
+                        showImageDialog();
+                    }
+                },
+                {
+                    label: 'Process Images',
+                    accelerator: 'F3',
+                    click: () => {
+                        processImages();
+                    }
+                },
+                { type: "separator" },
+                {
+                    label: "Quit",
+                    accelerator:
+                        "ctrl+q",
+                    click: () => electron.app.quit()
+                }
+            ]
+        },
+        {
+            label: "Identification",
+            submenu:[
+               { label: 'Face Identifier',
+                    click: () => {
+                        navigateTo(`file:${__dirname}/src/FaceIdentification/FaceId.html`);
+                    }
+                }
+            ]
+
+        },
+        {
+            label: 'Tools',
+            submenu: [
+                {
+                    label: 'Dev Tools',
+                    accelerator: 'F12',
+                    click: () => {
+                        mainWindow.toggleDevTools();
+                    }
+                }]
+        }
+    ];
+    
+
+	const menu = Menu.buildFromTemplate(application_menu);
+
+	Menu.setApplicationMenu(menu);
+};
+
+let mainWindow;
 
 function createWindow() {
 
@@ -20,21 +94,33 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1024,
         height: 768,
-        icon: path.join(__dirname, "fav.jpg")
+        icon: path.join(__dirname, "fav.jpg"),
+        webPreferences: {
+            nodeIntegration: true
+            }
     })
-
+    mainWindow.loadURL(`file:${__dirname}/src/index.html`)
     mainWindow.webContents.once('dom-ready', () => {
-        mainWindow.webContents.send('thresholdUpdated', threshold * 100)
-        mainWindow.webContents.send('openDialogResult', imageLocation)
+        mainWindow.webContents.send('thresholdUpdated', threshold * 100);
+        mainWindow.webContents.send('openDialogResult', imageLocation);
     });
     // and load the index.html of the app.
-    mainWindow.loadURL(`file:${__dirname}/src/index.html`)
+    createMenu();
+    
     // Open the DevTools.
     //mainWindow.webContents.openDevTools()
-
-    executablePath = path.join(__dirname, "../ImageDuplicateFinder/ImageDuplicateFinder/bin/debug/netcoreapp3.1/ImageDuplicateFinder.exe");
-    if (!fs.existsSync(executablePath)) {
+    executablePaths.forEach(p=>{
+        console.log("Checking ... " + p);
+        if(fs.existsSync(p)){
+            executablePath = p;
+        }
+    })
+    
+    if (executablePath == "") {
         console.error("Please complie or set the ImageDuplicateFinder path.");
+    }
+    else{
+        console.log("FOUND IT");
     }
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -47,70 +133,13 @@ function createWindow() {
     })
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+(async () => {
+    app.on('ready', createWindow);
+})();
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') app.quit()
-})
 
-app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) createWindow()
-})
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-var application_menu = [
-    {
-        label: 'File',
-        submenu: [
-            {
-                label: 'Set Image Folder',
-                accelerator: 'F2',
-                click: () => {
-                    showImageDialog();
-                }
-            },
-            {
-                label: 'Process Images',
-                accelerator: 'F3',
-                click: () => {
-                    processImages();
-                }
-            },
-            { type: "separator" },
-            {
-                label: "Quit",
-                accelerator:
-                    "ctrl+q",
-                click: () => electron.app.quit()
-            }
-        ]
-    },
-    {
-        label: 'Tools',
-        submenu: [
-            {
-                label: 'Dev Tools',
-                accelerator: 'F12',
-                click: () => {
-                    mainWindow.toggleDevTools();
-                }
-            }]
-    }
-];
-
-menu = Menu.buildFromTemplate(application_menu);
-Menu.setApplicationMenu(menu);
-
-function processImages() {
+async function processImages() {
+  
     var params = [imageLocation, threshold.toString().replace(".", ",")];
     execFile(executablePath, params, (error, stdout, stderr) => {
         if (error) {
@@ -137,10 +166,17 @@ function deleteFile(fileLocation, fileName) {
     }
 }
 
-function showImageDialog() {
-    let dialog = electron.dialog.showOpenDialog({ properties: ['openFile', 'openDirectory', 'multiSelections'] });
-    imageLocation = dialog[0] + "\\";
+async function showImageDialog() {
+    let dialog = await electron.dialog.showOpenDialog({ properties: ['openFile', 'openDirectory', 'multiSelections'] });
+    debugger;
+    console.log(JSON.stringify(dialog));
+    imageLocation = dialog.filePaths[0]+ "\\";//JSON.stringify(dialog) + "\\";
+    
     mainWindow.webContents.send('openDialogResult', imageLocation);
+}
+
+async function navigateTo(url){
+    mainWindow.loadURL(url) 
 }
 
 ipc.on("doneProcessing", _ => {
@@ -160,7 +196,6 @@ ipc.on("processImagesClick", () => {
     processImages();
 })
 
-var dups = [];
 ipc.on("removeItem", (event, obj) => {
     console.log("Remove this item " + obj.val)
     dups.push(obj.val);

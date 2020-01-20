@@ -1,4 +1,4 @@
-const imageUpload = document.getElementById('imageUpload')
+let imageUpload = document.getElementById('imageUpload')
 
 Promise.all([
   faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
@@ -36,7 +36,7 @@ async function start() {
 }
 
 function loadLabeledImages() {
-  const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark','Jack Parrow','Kayleigh']
+  const labels = ['Jack Parrow','Kayleigh','Natalie']
   return Promise.all(
     labels.map(async label => {
       const descriptions = []

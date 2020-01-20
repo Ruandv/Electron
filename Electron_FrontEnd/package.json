@@ -1,31 +1,21 @@
 {
-  "name": "Image_Duplication_Identifier",
+  "name": "nodes",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "rimraf Electron-* && electron-packager . --platform=darwin,win32,linux --arch=x64 --icon=fav --overwrite "
+    "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "devDependencies": {
-    "electron": "^7.1.7",
-    "electron-packager": "^14.1.1",
-    "electron-prebuilt": "^1.4.13",
-    "rimraf": "^3.0.0"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.4.1",
+    "electron": "^7.1.7",
+    "electron-util": "^0.13.1",
+    "face-api.js": "^0.22.0",
     "jquery": "^3.4.1",
+    "node-fetch": "^2.6.0",
     "popper.js": "^1.16.0"
   }
 }
