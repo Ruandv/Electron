@@ -73,7 +73,4 @@ build
 /ImageDuplicateFinder/.vs
 /Electron_FrontEnd/Images/ImageArray.json
 /Electron_FrontEnd/Images/results.html
-/Electron_FrontEnd/src/FaceIdentification/Images/labeled_images/Angelique
-/Electron_FrontEnd/src/FaceIdentification/Images/labeled_images/Janus
-/Electron_FrontEnd/src/FaceIdentification/Images/labeled_images/Natalie
-/Electron_FrontEnd/src/FaceIdentification/Images/labeled_images/Kayleigh
+/Electron_FrontEnd/src/FaceIdentification/Images/labeled_images/*_
