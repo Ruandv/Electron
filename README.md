@@ -8,3 +8,4 @@ This is an electron application frontend that pass parameters to the ImageDuplic
 
 this application use some algorithm to determine if images are duplicates or not 
 sdfg
+asdf
