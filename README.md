@@ -1,4 +1,4 @@
-# Electron
+tesS# Electron
 This is an application that identifies duplicate images in a folder.
 
 ## Electron_FrontEnd
