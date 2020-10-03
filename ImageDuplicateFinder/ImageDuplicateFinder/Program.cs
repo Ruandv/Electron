@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace ImageDuplicateFinder
         static Dictionary<string, ulong> imageArray = new Dictionary<string, ulong>();
         static Dictionary<string, ulong> processed = new Dictionary<string, ulong>();
         static ImageHashes imageHasher1 = new ImageHashes(new ImageMagickTransformer());
+        static Stopwatch debugTimer;
+
         static void Main(string[] args)
         {
             var filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "svg" };
@@ -32,7 +35,7 @@ namespace ImageDuplicateFinder
                 string reading = "0";
                 do
                 {
-                    Console.WriteLine($"What is the Threshold? default = {threshold}");
+                    WriteMessage($"What is the Threshold? default = {threshold}", ConsoleColor.Yellow);
                     reading = Console.ReadLine();
                     reading = (reading == "" ? reading = "0" : reading);
                 } while (float.Parse(reading) > 1);
@@ -51,12 +54,11 @@ namespace ImageDuplicateFinder
 
                 foreach (var img in images)
                 {
-                    if (i % 100 == 0)
-                        Console.WriteLine($"Loading Thread {i}");
+                    WriteMessage($"Loading Thread {i}", ConsoleColor.White);
                     var tsk = new Thread(r =>
                     {
                         ProcessImage(imageArray, imageHasher1, img);
-                        Console.WriteLine("Thread Completed " + Thread.CurrentThread.Name);
+                        WriteMessage("Thread Completed " + Thread.CurrentThread.Name, ConsoleColor.Green);
                     });
                     tsk.Name = $"MyThread {i}";
                     tasks.Add(tsk);
@@ -66,17 +68,24 @@ namespace ImageDuplicateFinder
                 // Start the Threads
                 foreach (var t in tasks)
                 {
-                    Console.WriteLine($"Starting Thread {t.Name}");
+                    WriteMessage($"Starting Thread {t.Name}", ConsoleColor.Green);
+                    Console.Title = t.Name;
+                    debugTimer = new Stopwatch();
+                    debugTimer.Start();
                     t.Start();
+
+                    while (t.IsAlive)
+                    {
+                        if (debugTimer.ElapsedMilliseconds > 1000)
+                        {
+                            Console.Write(".");
+                            debugTimer.Restart();
+                        }
+                    }
+
                 }
 
-                // Wait for all the threads to finish
-                while (tasks.Any(x => x.IsAlive))
-                {
-
-                }
-
-                File.WriteAllText(Path.Combine(args[0], "ImageArray.json"), System.Text.Json.JsonSerializer.Serialize(imageArray));
+                File.WriteAllText(Path.Combine(args[0], "ImageArray.json"), System.Text.Json.JsonSerializer.Serialize(imageArray.ToArray()));
             }
             else
             {
@@ -275,8 +284,8 @@ namespace ImageDuplicateFinder
                                         </div>
                                     </div>
                                     ");
-                        Console.WriteLine($"{i} Comparing {img.Key}");
-                        Console.WriteLine($"{Math.Round(similarity, 6, MidpointRounding.ToPositiveInfinity)}\t\t{comp.Key}");
+                        WriteMessage($"{i} Comparing {img.Key}", ConsoleColor.Yellow);
+                        WriteMessage($"{Math.Round(similarity, 6, MidpointRounding.ToPositiveInfinity)}\t\t{comp.Key}", ConsoleColor.Yellow);
                     }
                 }
                 processed.Add(img.Key, img.Value);
@@ -290,13 +299,22 @@ namespace ImageDuplicateFinder
 
             sw.Write(sb);
             sw.Close();
-            File.Copy(".\\results.js", Path.Combine(args[0], "results.js"), true);
+            //File.Copy(".\\results.js", Path.Combine(args[0], "results.js"), true);
         }
 
         private static void ProcessImage(Dictionary<string, ulong> imageArray, ImageHashes imageHasher1, string img)
         {
             var hash1 = imageHasher1.CalculateDctHash(img);
             imageArray.Add(img, hash1);
+        }
+
+        private static void WriteMessage(string msg, ConsoleColor color)
+        {
+            Console.WriteLine();
+            Console.Write($"[{DateTime.Now.TimeOfDay}]\t\t");
+            Console.ForegroundColor = color;
+            Console.Write($"{msg}.");
+            Console.ResetColor();
         }
     }
 }
