@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.4.1",
-    "electron": "^7.1.7",
+    "electron": "^9.4.0",
     "electron-util": "^0.13.1",
     "face-api.js": "^0.22.0",
     "jquery": "^3.4.1",
